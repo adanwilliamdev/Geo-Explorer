@@ -1,111 +1,340 @@
 # 🗺️ Geo-Explorer
 
-Ferramenta interativa de exploração de trilhas de aprendizagem, construída como um **servidor MCP (Model Context Protocol)** em Node.js + TypeScript.
+### Servidor MCP para Trilhas de Aprendizagem com IA
 
-Projeto desenvolvido no **VBootcamp IBM Bob: IA de Nível Empresarial para Desenvolvedores e Tech Leaders**.
+Ferramenta interativa de exploração de trilhas de aprendizagem, desenvolvida como um **servidor MCP (Model Context Protocol)** utilizando **Node.js + TypeScript**.
 
-## ✨ O que o projeto faz
+O projeto foi desenvolvido durante o **Bootcamp IBM Bob: IA de Nível Empresarial para Desenvolvedores e Tech Leaders**, explorando a integração entre servidores MCP, ferramentas inteligentes e assistentes de IA.
 
-O Geo-Explorer expõe, via protocolo MCP, um conjunto de ferramentas que permitem a um assistente de IA (ou qualquer cliente MCP) ajudar alguém a estudar uma tecnologia do zero:
+---
 
-- consultar uma **trilha de aprendizagem** (módulos, níveis, descrição);
-- gerar **desafios práticos** de código por tecnologia e nível;
-- **emitir certificados** de conclusão; e
-- **verificar/revogar** certificados emitidos.
+## ✨ Sobre o projeto
 
-Tecnologias de trilha disponíveis atualmente: `java`, `node`, `react` e `python`.
+O **Geo-Explorer** disponibiliza, através do protocolo MCP, um conjunto de ferramentas que permite a um assistente de IA ou cliente MCP auxiliar usuários durante sua jornada de aprendizado em diferentes tecnologias.
 
-## 🧱 Stack
+A plataforma permite:
 
-- Node.js + TypeScript
-- [`@modelcontextprotocol/sdk`](https://github.com/modelcontextprotocol/typescript-sdk) (servidor MCP via stdio)
-- Jest + ts-jest (testes)
-- ESLint + Prettier (qualidade de código)
+* 📚 Consultar trilhas de aprendizagem;
+* 🧩 Explorar módulos, níveis e descrições;
+* 💻 Gerar desafios práticos de programação;
+* 🏆 Emitir certificados de conclusão;
+* 🔎 Verificar a autenticidade de certificados;
+* 🚫 Revogar certificados;
+* 🛠️ Listar todas as tecnologias disponíveis.
 
-## 📂 Estrutura do projeto
+### Tecnologias disponíveis
 
+Atualmente, o Geo-Explorer possui trilhas para:
+
+* ☕ Java
+* 🟢 Node.js
+* ⚛️ React
+* 🐍 Python
+
+---
+
+## 🧠 Arquitetura
+
+O projeto utiliza uma arquitetura organizada por responsabilidades, separando a camada de comunicação MCP das regras de negócio.
+
+```text
+Cliente MCP / Assistente de IA
+            │
+            ▼
+     ┌───────────────┐
+     │  MCP Server   │
+     └───────┬───────┘
+             │
+     ┌───────┴────────┐
+     │                │
+     ▼                ▼
+  Services          Tools
+     │
+     ├── Trail Service
+     ├── Challenge Service
+     └── Certificate Service
+             │
+             ▼
+          Data
+       trails.json
 ```
+
+O servidor utiliza **stdio** como mecanismo de comunicação, permitindo integração com clientes MCP compatíveis.
+
+---
+
+## 🧱 Stack Tecnológica
+
+| Tecnologia     | Utilização                              |
+| -------------- | --------------------------------------- |
+| **Node.js**    | Runtime da aplicação                    |
+| **TypeScript** | Linguagem principal                     |
+| **MCP SDK**    | Implementação do Model Context Protocol |
+| **Jest**       | Testes automatizados                    |
+| **ts-jest**    | Integração Jest + TypeScript            |
+| **ESLint**     | Análise e qualidade do código           |
+| **Prettier**   | Formatação do código                    |
+| **JSON**       | Armazenamento das trilhas               |
+
+---
+
+## 📂 Estrutura do Projeto
+
+```text
 src/
-├── index.ts                    # Ponto de entrada; inicializa o servidor MCP
+├── index.ts
+│
 ├── mcp/
-│   └── server.ts                # Definição do servidor MCP e registro das ferramentas
+│   └── server.ts
+│
 ├── services/
-│   ├── trailService.ts          # Regras de negócio das trilhas de aprendizagem
-│   ├── challengeService.ts      # Geração de desafios práticos
-│   └── certificateService.ts    # Emissão, verificação e revogação de certificados
+│   ├── trailService.ts
+│   ├── challengeService.ts
+│   └── certificateService.ts
+│
 └── data/
-    └── trails.json               # Dados das trilhas (módulos, níveis, descrições)
+    └── trails.json
+
 tests/
 ├── trail.test.ts
 ├── challenge.test.ts
 └── certificate.test.ts
 ```
 
-## 🔧 Ferramentas MCP disponíveis
+### Principais componentes
 
-| Ferramenta | Descrição | Parâmetros |
-|---|---|---|
-| `get_trail` | Retorna os detalhes de uma trilha | `tech` |
-| `generate_challenge` | Gera um desafio prático | `tech`, `level` |
-| `issue_certificate` | Emite um certificado de conclusão | `userName`, `tech`, `level?` |
-| `verify_certificate` | Verifica a autenticidade de um certificado | `certificateId` |
-| `list_technologies` | Lista todas as tecnologias com trilha disponível | — |
+**`index.ts`**
+Ponto de entrada da aplicação e inicialização do servidor MCP.
 
-## 🚀 Como rodar
+**`mcp/server.ts`**
+Configuração do servidor MCP e registro das ferramentas disponíveis.
 
-### Pré-requisitos
+**`trailService.ts`**
+Responsável pelas regras relacionadas às trilhas de aprendizagem.
 
-- Node.js 18+
-- npm
+**`challengeService.ts`**
+Responsável pela geração dos desafios práticos.
 
-### Instalação
+**`certificateService.ts`**
+Gerencia emissão, consulta, verificação e revogação de certificados.
+
+**`trails.json`**
+Contém os dados estruturados das trilhas de aprendizagem.
+
+---
+
+# 🔧 Ferramentas MCP
+
+O Geo-Explorer disponibiliza as seguintes ferramentas através do protocolo MCP:
+
+| Ferramenta           | Descrição                                  | Parâmetros                   |
+| -------------------- | ------------------------------------------ | ---------------------------- |
+| `get_trail`          | Retorna os detalhes de uma trilha          | `tech`                       |
+| `generate_challenge` | Gera um desafio prático                    | `tech`, `level`              |
+| `issue_certificate`  | Emite um certificado de conclusão          | `userName`, `tech`, `level?` |
+| `verify_certificate` | Verifica a autenticidade de um certificado | `certificateId`              |
+| `list_technologies`  | Lista as tecnologias disponíveis           | —                            |
+
+---
+
+## 🔄 Fluxo de utilização
+
+Um exemplo de fluxo utilizando o Geo-Explorer:
+
+```text
+1. Usuário escolhe uma tecnologia
+              │
+              ▼
+2. IA consulta a trilha
+              │
+              ▼
+3. Usuário escolhe seu nível
+              │
+              ▼
+4. IA gera um desafio prático
+              │
+              ▼
+5. Usuário conclui os estudos
+              │
+              ▼
+6. Certificado é emitido
+              │
+              ▼
+7. Certificado pode ser verificado
+```
+
+---
+
+# 🚀 Como executar
+
+## 📋 Pré-requisitos
+
+Antes de iniciar, certifique-se de possuir:
+
+* **Node.js 18+**
+* **npm**
+
+---
+
+## 📥 Instalação
+
+Clone o repositório e instale as dependências:
 
 ```bash
 npm install
 ```
 
-### Modo desenvolvimento (com hot-reload via tsx)
+---
+
+## 🛠️ Desenvolvimento
+
+Para executar o projeto em modo de desenvolvimento:
 
 ```bash
 npm run dev
 ```
 
-### Build de produção
+O projeto utiliza `tsx` para execução do código TypeScript durante o desenvolvimento.
+
+---
+
+## 📦 Build de produção
+
+Compile o projeto:
 
 ```bash
 npm run build
+```
+
+Depois execute a aplicação:
+
+```bash
 npm start
 ```
 
-O servidor MCP roda sobre **stdio**, então ele é pensado para ser conectado a partir de um cliente MCP (ex.: Claude Desktop, um agente próprio, etc.) e não gera saída interativa no terminal além dos logs de inicialização.
+O servidor MCP utiliza **stdio** para comunicação e foi projetado para ser integrado a clientes MCP compatíveis, como assistentes de IA, agentes personalizados e outras aplicações que suportem o protocolo.
 
-### Testes
+---
+
+# 🧪 Testes
+
+Execute a suíte de testes:
 
 ```bash
-npm test          # roda a suíte de testes uma vez
-npm run test:watch # roda em modo watch
+npm test
 ```
 
-### Lint e formatação
+Para executar os testes em modo de observação:
+
+```bash
+npm run test:watch
+```
+
+O projeto possui testes automatizados para:
+
+* Trilhas de aprendizagem;
+* Geração de desafios;
+* Emissão e gerenciamento de certificados.
+
+---
+
+# 🧹 Qualidade de Código
+
+Para executar a análise estática:
 
 ```bash
 npm run lint
+```
+
+Para formatar o código:
+
+```bash
 npm run format
 ```
 
-## 🩹 Correções aplicadas nesta revisão
+---
 
-O código enviado continha alguns problemas que impediam a compilação e a execução dos testes. Veja o que foi corrigido:
+# 🔌 Integração com MCP
 
-1. **`src/services/certificateService.ts` estava vazio.** O arquivo era importado por `mcp/server.ts` e pelos testes (`tests/certificate.test.ts`), mas não existia nenhuma implementação. Foi criada a classe `CertificateService`, com `issueCertificate`, `verifyCertificate`, `revokeCertificate` e `listCertificates`, incluindo geração de HTML e arte ASCII do certificado — tudo compatível com o que os testes já esperavam.
-2. **Template strings quebradas (crases perdidas).** Em `src/index.ts`, `src/mcp/server.ts`, `src/services/trailService.ts` e `src/services/challengeService.ts`, diversas mensagens de erro e IDs dinâmicos haviam perdido as crases (`` ` ``) e os `${...}`, virando código JavaScript inválido (ex.: `throw new Error(Trilha não encontrada para tecnologia: );`). Todas foram reescritas como template literals válidos.
-3. **String malformada em `challengeService.ts`.** A dica `'Use a chave 'uuid' para identificar itens'` usava aspas simples aninhadas dentro de uma string de aspas simples, fechando a string prematuramente e quebrando a sintaxe. Corrigida para usar aspas duplas internas.
-4. **`import.meta.url` incompatível com o `tsconfig.json`.** O `tsconfig.json` usa `"module": "commonjs"`, mas `src/index.ts` usava `import.meta.url` (uma API exclusiva de ES Modules), o que quebra a compilação nesse modo. A checagem de "executado diretamente" foi reescrita para o equivalente em CommonJS: `require.main === module`.
-5. **Codificação e finais de linha inconsistentes.** Vários arquivos (`.ts` e `.json`) tinham um BOM (`\uFEFF`) no início e finais de linha `CRLF`. Isso foi normalizado para UTF-8 sem BOM e `LF`, evitando problemas de parsing em algumas ferramentas.
-6. **Configurações de projeto ausentes.** Não havia `.eslintrc` (necessário para o script `npm run lint`) nem `.gitignore` (o que faria `node_modules/` e `dist/` irem para o controle de versão). Ambos foram adicionados.
+O **Model Context Protocol (MCP)** permite que aplicações de IA interajam de forma padronizada com ferramentas e fontes de dados externas.
 
-Após as correções, `npx tsc --noEmit`, `npm run build`, `npm run lint` e `npm test` executam sem erros (18/18 testes passando).
+Neste projeto, o servidor MCP funciona como uma camada de ferramentas que permite ao assistente de IA consultar trilhas, gerar desafios e gerenciar certificados.
 
-## 📜 Licença
+```text
+┌─────────────────────────────┐
+│      Assistente de IA       │
+└──────────────┬──────────────┘
+               │
+               │ MCP / stdio
+               ▼
+┌─────────────────────────────┐
+│       Geo-Explorer          │
+│         MCP Server          │
+├─────────────────────────────┤
+│ • get_trail                 │
+│ • generate_challenge        │
+│ • issue_certificate         │
+│ • verify_certificate        │
+│ • list_technologies         │
+└─────────────────────────────┘
+```
 
-MIT
+Essa abordagem permite separar a inteligência do cliente da implementação das ferramentas, facilitando futuras extensões e integrações.
+
+---
+
+# 🎯 Objetivos do Projeto
+
+O Geo-Explorer foi desenvolvido com foco em:
+
+* Explorar o **Model Context Protocol**;
+* Desenvolver servidores MCP utilizando TypeScript;
+* Criar ferramentas consumíveis por agentes de IA;
+* Aplicar separação de responsabilidades;
+* Implementar testes automatizados;
+* Trabalhar com arquitetura modular;
+* Integrar conceitos de IA e desenvolvimento de software.
+
+---
+
+# 🔮 Possíveis Evoluções
+
+Entre as possibilidades de evolução do projeto estão:
+
+* 🌐 Persistência dos dados em banco de dados;
+* 👤 Sistema de usuários;
+* 📊 Dashboard de progresso;
+* 🏅 Sistema de níveis e conquistas;
+* 🤖 Geração de desafios utilizando LLMs;
+* 📝 Avaliação automática de respostas;
+* 🔐 Autenticação e autorização;
+* 📜 Certificados com validação pública;
+* ☁️ Deploy em ambiente cloud;
+* 🔌 Integração com outros clientes MCP;
+* 📚 Expansão das trilhas para novas tecnologias.
+
+---
+
+# 🎓 Contexto Acadêmico
+
+Projeto desenvolvido como parte do:
+
+**Bootcamp IBM Bob: IA de Nível Empresarial para Desenvolvedores e Tech Leaders**
+
+O projeto teve como objetivo aplicar conceitos relacionados a **Inteligência Artificial, agentes, ferramentas e Model Context Protocol**, conectando esses conceitos ao desenvolvimento de software moderno.
+
+---
+
+# 📜 Licença
+
+Este projeto está licenciado sob a licença **MIT**.
+
+---
+
+<div align="center">
+
+### 🚀 Geo-Explorer
+
+**Explorando conhecimento através de IA, ferramentas e desenvolvimento de software.**
+
+</div>
