@@ -1,0 +1,64 @@
+{
+  "java": {
+    "title": "Trilha Java Developer",
+    "levels": ["iniciante", "intermediario", "avancado"],
+    "modules": [
+      "Sintaxe Básica",
+      "Estruturas de Controle",
+      "POO (Programação Orientada a Objetos)",
+      "Collections API",
+      "Spring Boot",
+      "JPA/Hibernate",
+      "Testes Unitários (JUnit)",
+      "Microsserviços"
+    ],
+    "description": "Domine Java do básico ao avançado com foco em desenvolvimento enterprise"
+  },
+  "node": {
+    "title": "Trilha Node.js Backend",
+    "levels": ["iniciante", "intermediario"],
+    "modules": [
+      "Fundamentos HTTP",
+      "Express.js",
+      "Fastify",
+      "ORM (Prisma/TypeORM)",
+      "Bancos de Dados (PostgreSQL/MongoDB)",
+      "Autenticação JWT",
+      "WebSockets",
+      "Testes (Jest/Supertest)",
+      "Deploy com Docker"
+    ],
+    "description": "Desenvolva APIs robustas e escaláveis com Node.js"
+  },
+  "react": {
+    "title": "Trilha React Frontend",
+    "levels": ["iniciante", "intermediario", "avancado"],
+    "modules": [
+      "Componentes e Props",
+      "State e Hooks",
+      "Context API",
+      "React Router",
+      "Next.js",
+      "Tailwind CSS",
+      "Testes com React Testing Library",
+      "GraphQL/Apollo",
+      "Performance Otimização"
+    ],
+    "description": "Construa interfaces modernas e reativas com React"
+  },
+  "python": {
+    "title": "Trilha Python Data Science",
+    "levels": ["iniciante", "intermediario"],
+    "modules": [
+      "Python Básico",
+      "NumPy",
+      "Pandas",
+      "Data Visualization (Matplotlib/Seaborn)",
+      "Machine Learning (Scikit-learn)",
+      "SQL com Python",
+      "FastAPI",
+      "Data Pipelines"
+    ],
+    "description": "Domine Python para ciência de dados e análise"
+  }
+}
