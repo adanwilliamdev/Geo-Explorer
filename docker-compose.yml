@@ -1,0 +1,7 @@
+services:
+  geo-explorer:
+    build: .
+    image: geo-explorer:latest
+    container_name: geo-explorer
+    stdin_open: true # necessário: o servidor MCP se comunica via stdio
+    tty: false

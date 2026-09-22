@@ -22,6 +22,7 @@ O projeto foi desenvolvido durante o **Bootcamp IBM Bob: IA de Nível Empresaria
 * [Ferramentas MCP](#-ferramentas-mcp)
 * [Como executar](#-como-executar)
 * [Conectando a um cliente MCP](#-conectando-a-um-cliente-mcp)
+* [Executando com Docker](#-executando-com-docker)
 * [Testes](#-testes)
 * [Qualidade de Código](#-qualidade-de-código)
 * [Licença](#-licença)
@@ -233,6 +234,34 @@ npm start
 ```
 
 O servidor MCP utiliza **stdio** para comunicação e foi projetado para ser integrado a clientes MCP compatíveis, como assistentes de IA, agentes personalizados e outras aplicações que suportem o protocolo.
+
+---
+
+# 🐳 Executando com Docker
+
+O projeto inclui um `Dockerfile` multi-stage (build + produção) e um `docker-compose.yml` para facilitar a execução em containers.
+
+## Build da imagem
+
+```bash
+docker build -t geo-explorer .
+```
+
+## Executando o container
+
+Como o servidor se comunica via **stdio**, é necessário manter o stdin aberto:
+
+```bash
+docker run -i --rm geo-explorer
+```
+
+## Usando docker-compose
+
+```bash
+docker compose run --rm geo-explorer
+```
+
+A imagem final roda como usuário não-root e contém apenas as dependências de produção, mantendo o container enxuto e mais seguro.
 
 ---
 
