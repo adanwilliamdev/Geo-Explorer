@@ -1,0 +1,9 @@
+node_modules
+dist
+tests
+coverage
+*.log
+.git
+.gitignore
+.eslintrc.json
+README.md
