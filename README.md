@@ -2,9 +2,29 @@
 
 ### Servidor MCP para Trilhas de Aprendizagem com IA
 
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#-licença)
+[![Tests](https://img.shields.io/badge/tests-jest-C21325?logo=jest&logoColor=white)](#-testes)
+
 Ferramenta interativa de exploração de trilhas de aprendizagem, desenvolvida como um **servidor MCP (Model Context Protocol)** utilizando **Node.js + TypeScript**.
 
 O projeto foi desenvolvido durante o **Bootcamp IBM Bob: IA de Nível Empresarial para Desenvolvedores e Tech Leaders**, explorando a integração entre servidores MCP, ferramentas inteligentes e assistentes de IA.
+
+---
+
+## 📑 Índice
+
+* [Sobre o projeto](#-sobre-o-projeto)
+* [Arquitetura](#-arquitetura)
+* [Stack Tecnológica](#-stack-tecnológica)
+* [Estrutura do Projeto](#-estrutura-do-projeto)
+* [Ferramentas MCP](#-ferramentas-mcp)
+* [Como executar](#-como-executar)
+* [Conectando a um cliente MCP](#-conectando-a-um-cliente-mcp)
+* [Testes](#-testes)
+* [Qualidade de Código](#-qualidade-de-código)
+* [Licença](#-licença)
 
 ---
 
@@ -213,6 +233,25 @@ npm start
 ```
 
 O servidor MCP utiliza **stdio** para comunicação e foi projetado para ser integrado a clientes MCP compatíveis, como assistentes de IA, agentes personalizados e outras aplicações que suportem o protocolo.
+
+---
+
+# 🔗 Conectando a um cliente MCP
+
+Por usar **stdio**, o Geo-Explorer pode ser registrado em qualquer cliente compatível com MCP. Exemplo de configuração para o **Claude Desktop** (`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "geo-explorer": {
+      "command": "node",
+      "args": ["/caminho/absoluto/para/geo-explorer/dist/index.js"]
+    }
+  }
+}
+```
+
+Após buildar o projeto (`npm run build`) e reiniciar o cliente, as ferramentas `get_trail`, `generate_challenge`, `issue_certificate`, `verify_certificate` e `list_technologies` ficam disponíveis para o assistente de IA.
 
 ---
 
