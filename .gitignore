@@ -5,6 +5,7 @@ coverage/
 .env
 .DS_Store
 # dados locais gerados pelo servidor (progresso, certificados, segredo)
-data/
-.geo-explorer/
+# ancorado na raiz: um "data/" solto também ignoraria src/data/
+/data/
+/.geo-explorer/
 secret.key

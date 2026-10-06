@@ -1,0 +1,317 @@
+[
+  {
+    "id": "java-basics-1", "tech": "java", "level": "iniciante",
+    "title": "Calculadora Simples",
+    "description": "Crie uma calculadora que realiza operações básicas (soma, subtração, multiplicação, divisão) utilizando métodos e tratamento de exceções.",
+    "requirements": [
+      "Criar uma classe Calculator com métodos para cada operação",
+      "Implementar tratamento para divisão por zero",
+      "Utilizar Scanner para entrada de dados",
+      "Exibir resultados formatados"
+    ],
+    "estimatedTime": "45 minutos",
+    "hints": ["Use try-catch para exceções", "Crie um menu com switch"],
+    "tags": ["métodos", "exceções", "console"],
+    "moduleIds": ["java-sintaxe-basica", "java-estruturas-controle"]
+  },
+  {
+    "id": "java-oop-1", "tech": "java", "level": "intermediario",
+    "title": "Sistema de Gerenciamento de Biblioteca",
+    "description": "Desenvolva um sistema de biblioteca com classes para Livro, Usuário e Empréstimo utilizando conceitos de POO.",
+    "requirements": [
+      "Criar classes com encapsulamento adequado",
+      "Implementar herança para diferentes tipos de usuários",
+      "Utilizar collections para gerenciar dados",
+      "Implementar validações de negócio"
+    ],
+    "estimatedTime": "1h30min",
+    "hints": ["Pense na relação entre as entidades", "Use List para armazenamento"],
+    "tags": ["poo", "herança", "collections"],
+    "moduleIds": ["java-poo", "java-collections"]
+  },
+  {
+    "id": "java-streams-1", "tech": "java", "level": "intermediario",
+    "title": "Analisador de Vendas com Streams",
+    "description": "Processe uma lista de vendas em memória usando Streams e lambdas para extrair relatórios gerenciais.",
+    "requirements": [
+      "Calcular o total vendido por categoria com Collectors.groupingBy",
+      "Listar os 5 produtos mais vendidos usando Comparator",
+      "Filtrar vendas por período com Predicate",
+      "Cobrir os cálculos com testes JUnit"
+    ],
+    "estimatedTime": "2 horas",
+    "hints": ["Use Collectors.summingDouble", "Prefira imutabilidade nos modelos (records)"],
+    "tags": ["streams", "lambdas", "junit"],
+    "moduleIds": ["java-collections", "java-junit"]
+  },
+  {
+    "id": "java-spring-1", "tech": "java", "level": "avancado",
+    "title": "API REST com Spring Boot",
+    "description": "Crie uma API REST completa com Spring Boot para gerenciamento de produtos, incluindo autenticação e banco de dados.",
+    "requirements": [
+      "Configurar Spring Boot com Spring Security",
+      "Implementar CRUD completo para produtos",
+      "Utilizar JPA/Hibernate com banco de dados",
+      "Documentar a API com Swagger"
+    ],
+    "estimatedTime": "3 horas",
+    "hints": ["Use Spring Initializr para começar", "Siga padrões RESTful"],
+    "tags": ["spring", "rest", "jpa", "segurança"],
+    "moduleIds": ["java-spring-boot", "java-jpa-hibernate"]
+  },
+  {
+    "id": "node-basics-1", "tech": "node", "level": "iniciante",
+    "title": "Servidor HTTP Simples",
+    "description": "Crie um servidor HTTP que serve arquivos estáticos e processa requisições GET e POST.",
+    "requirements": [
+      "Usar módulo http nativo ou Express",
+      "Servir arquivos HTML/CSS/JS",
+      "Processar dados de formulário",
+      "Retornar respostas JSON"
+    ],
+    "estimatedTime": "1 hora",
+    "hints": ["Use fs para ler arquivos", "Configure rotas básicas"],
+    "tags": ["http", "express", "estáticos"],
+    "moduleIds": ["node-fundamentos-http", "node-express"]
+  },
+  {
+    "id": "node-express-1", "tech": "node", "level": "intermediario",
+    "title": "API RESTful com Autenticação JWT",
+    "description": "Construa uma API RESTful com Express, autenticação JWT e integração com banco de dados PostgreSQL.",
+    "requirements": [
+      "Configurar Express com estrutura MVC",
+      "Implementar autenticação JWT",
+      "Integrar com Prisma/TypeORM",
+      "Criar middlewares para validação"
+    ],
+    "estimatedTime": "2h30min",
+    "hints": ["Use bcrypt para hash de senha", "Implemente refresh token"],
+    "tags": ["jwt", "express", "prisma", "postgresql"],
+    "moduleIds": ["node-autenticacao-jwt", "node-orm"]
+  },
+  {
+    "id": "node-advanced-1", "tech": "node", "level": "avancado",
+    "title": "Processamento Assíncrono com Filas",
+    "description": "Construa uma API que recebe pedidos de geração de relatório, enfileira o trabalho e o processa em workers independentes, com observabilidade e deploy em containers.",
+    "requirements": [
+      "Enfileirar jobs com BullMQ ou RabbitMQ e processá-los em um worker separado",
+      "Implementar retries com backoff e garantir idempotência dos jobs",
+      "Expor endpoint de health check e logs estruturados em JSON",
+      "Empacotar API e worker com Dockerfile multi-stage e docker compose"
+    ],
+    "estimatedTime": "4 horas",
+    "hints": ["Use um identificador de idempotência por job", "Separe os entrypoints da API e do worker"],
+    "tags": ["filas", "workers", "docker", "observabilidade"],
+    "moduleIds": ["node-filas-mensageria", "node-observabilidade", "node-docker-deploy"]
+  },
+  {
+    "id": "react-basics-1", "tech": "react", "level": "iniciante",
+    "title": "Lista de Tarefas",
+    "description": "Crie uma aplicação de lista de tarefas com React utilizando hooks e gerenciamento de estado.",
+    "requirements": [
+      "Usar useState para gerenciar tarefas",
+      "Permitir adicionar, remover e marcar como concluído",
+      "Salvar dados no localStorage",
+      "Ter um design responsivo"
+    ],
+    "estimatedTime": "1h30min",
+    "hints": ["Use a lib \"uuid\" para identificar itens", "Crie componentes reutilizáveis"],
+    "tags": ["hooks", "estado", "localStorage"],
+    "moduleIds": ["react-componentes-props", "react-state-hooks"]
+  },
+  {
+    "id": "react-forms-1", "tech": "react", "level": "iniciante",
+    "title": "Formulário de Cadastro com Validação",
+    "description": "Implemente um formulário de cadastro com campos controlados, validação em tempo real e feedback visual de erros.",
+    "requirements": [
+      "Usar componentes controlados com useState",
+      "Validar e-mail, senha e confirmação de senha ao digitar",
+      "Desabilitar o botão de envio enquanto houver erros",
+      "Exibir mensagens de erro acessíveis (aria-live)"
+    ],
+    "estimatedTime": "1 hora",
+    "hints": ["Centralize as regras de validação em uma função pura", "Um hook customizado pode reaproveitar a lógica"],
+    "tags": ["formulários", "validação", "acessibilidade"],
+    "moduleIds": ["react-state-hooks"]
+  },
+  {
+    "id": "react-context-1", "tech": "react", "level": "intermediario",
+    "title": "E-commerce Carousel",
+    "description": "Desenvolva um carousel de produtos com filtros e carrinho de compras usando Context API e React Router.",
+    "requirements": [
+      "Usar Context API para estado global",
+      "Implementar rotas para categorias",
+      "Criar carrinho de compras",
+      "Utilizar Tailwind CSS para estilização"
+    ],
+    "estimatedTime": "3 horas",
+    "hints": ["Pense na estrutura do contexto", "Use useReducer para estado complexo"],
+    "tags": ["context", "router", "tailwind"],
+    "moduleIds": ["react-context-api", "react-router", "react-tailwind"]
+  },
+  {
+    "id": "react-next-1", "tech": "react", "level": "avancado",
+    "title": "Blog com Next.js e GraphQL",
+    "description": "Crie um blog completo com Next.js, GraphQL (Apollo) e SSG/SSR.",
+    "requirements": [
+      "Configurar Next.js com TypeScript",
+      "Implementar Apollo Client para GraphQL",
+      "Usar SSG e SSR conforme necessário",
+      "Otimizar performance e SEO"
+    ],
+    "estimatedTime": "4 horas",
+    "hints": ["Use getStaticProps para posts", "Implemente paginação"],
+    "tags": ["nextjs", "graphql", "ssr", "seo"],
+    "moduleIds": ["react-nextjs", "react-graphql-apollo", "react-performance"]
+  },
+  {
+    "id": "python-basics-1", "tech": "python", "level": "iniciante",
+    "title": "Análise de Dados com Pandas",
+    "description": "Realize análise exploratória de dados utilizando Pandas e crie visualizações com Matplotlib.",
+    "requirements": [
+      "Carregar dados de um CSV",
+      "Realizar limpeza e pré-processamento",
+      "Criar visualizações relevantes",
+      "Gerar estatísticas descritivas"
+    ],
+    "estimatedTime": "1h30min",
+    "hints": ["Use describe() para estatísticas", "Crie gráficos de distribuição"],
+    "tags": ["pandas", "eda", "matplotlib"],
+    "moduleIds": ["python-pandas", "python-numpy"]
+  },
+  {
+    "id": "python-sql-1", "tech": "python", "level": "intermediario",
+    "title": "Relatório de Vendas com SQL e Pandas",
+    "description": "Consulte um banco relacional a partir do Python, consolide os resultados com pandas e gere um relatório visual.",
+    "requirements": [
+      "Conectar a um banco (SQLite ou PostgreSQL) com SQLAlchemy",
+      "Escrever consultas parametrizadas, sem concatenar strings",
+      "Carregar os resultados em DataFrames e agregá-los por período",
+      "Gerar ao menos dois gráficos com Matplotlib ou Seaborn"
+    ],
+    "estimatedTime": "2 horas",
+    "hints": ["Use pandas.read_sql com parâmetros", "Teste as consultas direto no cliente SQL antes"],
+    "tags": ["sql", "sqlalchemy", "visualização"],
+    "moduleIds": ["python-sql", "python-visualizacao"]
+  },
+  {
+    "id": "python-ml-1", "tech": "python", "level": "intermediario",
+    "title": "Predição com Machine Learning",
+    "description": "Construa um modelo de machine learning para prever preços utilizando Scikit-learn.",
+    "requirements": [
+      "Realizar análise exploratória",
+      "Preparar dados (encoding, scaling)",
+      "Treinar e avaliar múltiplos modelos",
+      "Otimizar hiperparâmetros"
+    ],
+    "estimatedTime": "3 horas",
+    "hints": ["Use GridSearchCV para otimização", "Avalie com métricas apropriadas"],
+    "tags": ["scikit-learn", "regressão", "hiperparâmetros"],
+    "moduleIds": ["python-machine-learning"]
+  },
+  {
+    "id": "python-advanced-1", "tech": "python", "level": "avancado",
+    "title": "API de Predição com FastAPI",
+    "description": "Treine um modelo, sirva-o por uma API FastAPI e monitore a qualidade das predições em produção.",
+    "requirements": [
+      "Persistir o modelo treinado e carregá-lo no startup da API",
+      "Validar entrada e saída com modelos Pydantic",
+      "Registrar entradas e predições para monitorar drift",
+      "Cobrir os endpoints com testes automatizados"
+    ],
+    "estimatedTime": "4 horas",
+    "hints": ["Use lifespan events para carregar o modelo uma única vez", "Compare distribuições de entrada ao longo do tempo"],
+    "tags": ["fastapi", "mlops", "pydantic"],
+    "moduleIds": ["python-fastapi", "python-mlops"]
+  },
+  {
+    "id": "typescript-basics-1", "tech": "typescript", "level": "iniciante",
+    "title": "Gerenciador de Contatos Tipado",
+    "description": "Implemente um gerenciador de contatos em linha de comando com modelos fortemente tipados.",
+    "requirements": [
+      "Definir interfaces para Contato e Endereço com campos opcionais",
+      "Tipar todas as funções de CRUD sem usar any",
+      "Habilitar strict no tsconfig e corrigir todos os erros",
+      "Persistir os contatos em um arquivo JSON com leitura tipada"
+    ],
+    "estimatedTime": "1h30min",
+    "hints": ["Prefira unknown a any em dados externos", "Use readonly onde não houver mutação"],
+    "tags": ["interfaces", "strict", "json"],
+    "moduleIds": ["typescript-tipos-basicos", "typescript-interfaces"]
+  },
+  {
+    "id": "typescript-generics-1", "tech": "typescript", "level": "intermediario",
+    "title": "Biblioteca de Result e Repositório Genérico",
+    "description": "Crie um tipo Result<T, E> e um repositório genérico em memória, usando unions discriminadas e generics com constraints.",
+    "requirements": [
+      "Modelar Result<T, E> como union discriminada com helpers ok() e err()",
+      "Criar Repository<T extends { id: string }> com operações CRUD",
+      "Garantir narrowing exaustivo com verificação never",
+      "Escrever testes que validem os tipos e o comportamento"
+    ],
+    "estimatedTime": "2 horas",
+    "hints": ["Use uma função assertNever para checar exaustividade", "Limite o tipo de id com constraints"],
+    "tags": ["generics", "unions", "narrowing"],
+    "moduleIds": ["typescript-generics", "typescript-unions-narrowing"]
+  },
+  {
+    "id": "typescript-advanced-1", "tech": "typescript", "level": "avancado",
+    "title": "Cliente de API com Tipos Derivados",
+    "description": "Construa um cliente HTTP cujos tipos de rota, parâmetros e respostas são derivados de um único schema, com validação em runtime.",
+    "requirements": [
+      "Definir os schemas das rotas com Zod e inferir os tipos com z.infer",
+      "Extrair parâmetros de rota via template literal types (ex.: /users/:id)",
+      "Usar conditional types para mapear rota e método para o tipo de resposta",
+      "Validar as respostas em runtime e retornar erros tipados"
+    ],
+    "estimatedTime": "4 horas",
+    "hints": ["Comece pelo tipo que extrai os parâmetros da string da rota", "Use um mapa de rotas como fonte única de verdade"],
+    "tags": ["conditional-types", "zod", "template-literal-types"],
+    "moduleIds": ["typescript-utility-types", "typescript-conditional-types", "typescript-apis-tipadas"]
+  },
+  {
+    "id": "devops-basics-1", "tech": "devops", "level": "iniciante",
+    "title": "Automatizando Backups com Shell Script",
+    "description": "Escreva um script de backup que compacta um diretório, aplica rotação de arquivos antigos e registra a execução.",
+    "requirements": [
+      "Receber diretório de origem e destino por argumentos, validando as entradas",
+      "Gerar arquivo .tar.gz com timestamp no nome",
+      "Remover backups com mais de 7 dias",
+      "Registrar logs e retornar códigos de saída adequados"
+    ],
+    "estimatedTime": "1 hora",
+    "hints": ["Use set -euo pipefail", "Agende com cron para testar a rotina"],
+    "tags": ["shell", "cron", "backup"],
+    "moduleIds": ["devops-linux-shell", "devops-git"]
+  },
+  {
+    "id": "devops-cicd-1", "tech": "devops", "level": "intermediario",
+    "title": "Pipeline CI/CD para uma API Containerizada",
+    "description": "Monte um pipeline no GitHub Actions que testa, constrói a imagem Docker e publica em um registry a cada merge na branch principal.",
+    "requirements": [
+      "Executar lint e testes em pull requests",
+      "Construir a imagem com Dockerfile multi-stage usando cache de camadas",
+      "Publicar a imagem com tag baseada no commit",
+      "Proteger a branch principal exigindo o pipeline verde"
+    ],
+    "estimatedTime": "2h30min",
+    "hints": ["Use docker/build-push-action com cache", "Guarde credenciais em secrets do repositório"],
+    "tags": ["github-actions", "docker", "registry"],
+    "moduleIds": ["devops-docker", "devops-cicd"]
+  },
+  {
+    "id": "devops-k8s-1", "tech": "devops", "level": "avancado",
+    "title": "Deploy Resiliente no Kubernetes",
+    "description": "Publique uma aplicação em um cluster Kubernetes local com configuração externa, probes de saúde e monitoramento básico.",
+    "requirements": [
+      "Criar Deployment, Service e Ingress para a aplicação",
+      "Externalizar configuração com ConfigMap e Secret",
+      "Configurar liveness e readiness probes e limites de recursos",
+      "Expor métricas e visualizá-las no Prometheus/Grafana"
+    ],
+    "estimatedTime": "5 horas",
+    "hints": ["Use kind ou minikube para o cluster local", "Valide os manifestos com kubectl apply --dry-run=server"],
+    "tags": ["kubernetes", "probes", "prometheus"],
+    "moduleIds": ["devops-kubernetes", "devops-observabilidade"]
+  }
+]
