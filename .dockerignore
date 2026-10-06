@@ -1,9 +1,17 @@
 node_modules
 dist
 tests
+scripts
 coverage
 *.log
 .git
+.github
 .gitignore
 .eslintrc.json
+.prettierrc.json
+.editorconfig
+.env
+.env.*
 README.md
+CHANGELOG.md
+jest.config.js

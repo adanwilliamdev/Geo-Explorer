@@ -5,3 +5,13 @@ services:
     container_name: geo-explorer
     stdin_open: true # necessário: o servidor MCP se comunica via stdio
     tty: false
+    environment:
+      GEO_DATA_DIR: /data
+      GEO_LOG_LEVEL: info
+      # GEO_STRICT_CERTIFICATES: "true"
+      # GEO_CERT_SECRET: troque-por-um-segredo-longo
+    volumes:
+      - geo-data:/data
+
+volumes:
+  geo-data:

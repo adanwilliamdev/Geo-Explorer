@@ -1,64 +1,97 @@
 {
   "java": {
     "title": "Trilha Java Developer",
-    "levels": ["iniciante", "intermediario", "avancado"],
+    "description": "Domine Java do básico ao avançado com foco em desenvolvimento enterprise",
+    "aliases": ["jvm", "jdk"],
     "modules": [
-      "Sintaxe Básica",
-      "Estruturas de Controle",
-      "POO (Programação Orientada a Objetos)",
-      "Collections API",
-      "Spring Boot",
-      "JPA/Hibernate",
-      "Testes Unitários (JUnit)",
-      "Microsserviços"
-    ],
-    "description": "Domine Java do básico ao avançado com foco em desenvolvimento enterprise"
+      { "id": "java-sintaxe-basica", "name": "Sintaxe Básica", "level": "iniciante", "hours": 6, "topics": ["tipos primitivos", "variáveis e operadores", "entrada e saída"], "prerequisites": [] },
+      { "id": "java-estruturas-controle", "name": "Estruturas de Controle", "level": "iniciante", "hours": 5, "topics": ["if/else e switch", "laços for e while", "métodos"], "prerequisites": ["java-sintaxe-basica"] },
+      { "id": "java-poo", "name": "POO (Programação Orientada a Objetos)", "level": "intermediario", "hours": 10, "topics": ["classes e objetos", "herança e polimorfismo", "encapsulamento e interfaces"], "prerequisites": ["java-estruturas-controle"] },
+      { "id": "java-collections", "name": "Collections API", "level": "intermediario", "hours": 8, "topics": ["List, Set e Map", "streams e lambdas", "Comparable e Comparator"], "prerequisites": ["java-poo"] },
+      { "id": "java-junit", "name": "Testes Unitários (JUnit)", "level": "intermediario", "hours": 6, "topics": ["JUnit 5", "mocks com Mockito", "TDD"], "prerequisites": ["java-poo"] },
+      { "id": "java-spring-boot", "name": "Spring Boot", "level": "avancado", "hours": 14, "topics": ["injeção de dependência", "controllers REST", "Spring Security"], "prerequisites": ["java-collections"] },
+      { "id": "java-jpa-hibernate", "name": "JPA/Hibernate", "level": "avancado", "hours": 12, "topics": ["mapeamento de entidades", "relacionamentos", "transações e problema N+1"], "prerequisites": ["java-spring-boot"] },
+      { "id": "java-microsservicos", "name": "Microsserviços", "level": "avancado", "hours": 16, "topics": ["comunicação síncrona e assíncrona", "API Gateway", "resiliência e circuit breaker"], "prerequisites": ["java-spring-boot", "java-junit"] }
+    ]
   },
   "node": {
     "title": "Trilha Node.js Backend",
-    "levels": ["iniciante", "intermediario"],
+    "description": "Desenvolva APIs robustas e escaláveis com Node.js",
+    "aliases": ["node.js", "nodejs", "express"],
     "modules": [
-      "Fundamentos HTTP",
-      "Express.js",
-      "Fastify",
-      "ORM (Prisma/TypeORM)",
-      "Bancos de Dados (PostgreSQL/MongoDB)",
-      "Autenticação JWT",
-      "WebSockets",
-      "Testes (Jest/Supertest)",
-      "Deploy com Docker"
-    ],
-    "description": "Desenvolva APIs robustas e escaláveis com Node.js"
+      { "id": "node-fundamentos-http", "name": "Fundamentos HTTP", "level": "iniciante", "hours": 5, "topics": ["ciclo requisição/resposta", "métodos e status HTTP", "módulo http nativo"], "prerequisites": [] },
+      { "id": "node-express", "name": "Express.js", "level": "iniciante", "hours": 6, "topics": ["rotas e middlewares", "tratamento de erros", "validação de entrada"], "prerequisites": ["node-fundamentos-http"] },
+      { "id": "node-bancos-de-dados", "name": "Bancos de Dados (PostgreSQL/MongoDB)", "level": "intermediario", "hours": 8, "topics": ["PostgreSQL e SQL", "MongoDB", "modelagem e índices"], "prerequisites": ["node-express"] },
+      { "id": "node-orm", "name": "ORM (Prisma/TypeORM)", "level": "intermediario", "hours": 7, "topics": ["Prisma", "TypeORM", "migrations"], "prerequisites": ["node-bancos-de-dados"] },
+      { "id": "node-autenticacao-jwt", "name": "Autenticação JWT", "level": "intermediario", "hours": 6, "topics": ["hash de senha", "JWT e refresh token", "autorização por papéis"], "prerequisites": ["node-express"] },
+      { "id": "node-fastify", "name": "Fastify", "level": "intermediario", "hours": 5, "topics": ["plugins e hooks", "schemas JSON", "comparação com Express"], "prerequisites": ["node-express"] },
+      { "id": "node-testes", "name": "Testes (Jest/Supertest)", "level": "intermediario", "hours": 6, "topics": ["Jest", "Supertest", "testes de integração"], "prerequisites": ["node-express"] },
+      { "id": "node-websockets", "name": "WebSockets", "level": "avancado", "hours": 5, "topics": ["ws e Socket.IO", "salas e broadcast", "escalabilidade horizontal"], "prerequisites": ["node-express"] },
+      { "id": "node-docker-deploy", "name": "Deploy com Docker", "level": "avancado", "hours": 6, "topics": ["Dockerfile multi-stage", "docker compose", "variáveis de ambiente"], "prerequisites": ["node-express"] },
+      { "id": "node-observabilidade", "name": "Observabilidade e Logs", "level": "avancado", "hours": 6, "topics": ["logs estruturados", "métricas", "health checks"], "prerequisites": ["node-express"] },
+      { "id": "node-filas-mensageria", "name": "Filas e Mensageria", "level": "avancado", "hours": 8, "topics": ["filas com BullMQ/RabbitMQ", "workers e retries", "idempotência"], "prerequisites": ["node-bancos-de-dados"] }
+    ]
   },
   "react": {
     "title": "Trilha React Frontend",
-    "levels": ["iniciante", "intermediario", "avancado"],
+    "description": "Construa interfaces modernas e reativas com React",
+    "aliases": ["reactjs", "react.js", "nextjs"],
     "modules": [
-      "Componentes e Props",
-      "State e Hooks",
-      "Context API",
-      "React Router",
-      "Next.js",
-      "Tailwind CSS",
-      "Testes com React Testing Library",
-      "GraphQL/Apollo",
-      "Performance Otimização"
-    ],
-    "description": "Construa interfaces modernas e reativas com React"
+      { "id": "react-componentes-props", "name": "Componentes e Props", "level": "iniciante", "hours": 6, "topics": ["JSX", "componentes e props", "renderização de listas"], "prerequisites": [] },
+      { "id": "react-state-hooks", "name": "State e Hooks", "level": "iniciante", "hours": 8, "topics": ["useState e useEffect", "useRef e useMemo", "hooks customizados"], "prerequisites": ["react-componentes-props"] },
+      { "id": "react-context-api", "name": "Context API", "level": "intermediario", "hours": 5, "topics": ["Context", "useReducer", "quando evitar context"], "prerequisites": ["react-state-hooks"] },
+      { "id": "react-router", "name": "React Router", "level": "intermediario", "hours": 4, "topics": ["rotas e navegação", "rotas aninhadas", "loaders"], "prerequisites": ["react-componentes-props"] },
+      { "id": "react-tailwind", "name": "Tailwind CSS", "level": "intermediario", "hours": 4, "topics": ["utility-first", "responsividade", "componentes reutilizáveis"], "prerequisites": ["react-componentes-props"] },
+      { "id": "react-testes-rtl", "name": "Testes com React Testing Library", "level": "intermediario", "hours": 6, "topics": ["queries por acessibilidade", "user-event", "mocks de API"], "prerequisites": ["react-state-hooks"] },
+      { "id": "react-nextjs", "name": "Next.js", "level": "avancado", "hours": 12, "topics": ["App Router", "SSR, SSG e ISR", "Server Components"], "prerequisites": ["react-router", "react-state-hooks"] },
+      { "id": "react-graphql-apollo", "name": "GraphQL/Apollo", "level": "avancado", "hours": 8, "topics": ["queries e mutations", "cache do Apollo", "paginação"], "prerequisites": ["react-state-hooks"] },
+      { "id": "react-performance", "name": "Otimização de Performance", "level": "avancado", "hours": 6, "topics": ["memoização e re-renders", "code splitting", "profiling"], "prerequisites": ["react-state-hooks"] }
+    ]
   },
   "python": {
     "title": "Trilha Python Data Science",
-    "levels": ["iniciante", "intermediario"],
+    "description": "Domine Python para ciência de dados e análise",
+    "aliases": ["py", "python3"],
     "modules": [
-      "Python Básico",
-      "NumPy",
-      "Pandas",
-      "Data Visualization (Matplotlib/Seaborn)",
-      "Machine Learning (Scikit-learn)",
-      "SQL com Python",
-      "FastAPI",
-      "Data Pipelines"
-    ],
-    "description": "Domine Python para ciência de dados e análise"
+      { "id": "python-basico", "name": "Python Básico", "level": "iniciante", "hours": 8, "topics": ["tipos e estruturas de dados", "funções e módulos", "ambientes virtuais"], "prerequisites": [] },
+      { "id": "python-numpy", "name": "NumPy", "level": "iniciante", "hours": 5, "topics": ["arrays e broadcasting", "operações vetorizadas", "álgebra linear básica"], "prerequisites": ["python-basico"] },
+      { "id": "python-pandas", "name": "Pandas", "level": "iniciante", "hours": 8, "topics": ["DataFrame e Series", "limpeza de dados", "agrupamento e merge"], "prerequisites": ["python-numpy"] },
+      { "id": "python-visualizacao", "name": "Data Visualization (Matplotlib/Seaborn)", "level": "intermediario", "hours": 5, "topics": ["Matplotlib", "Seaborn", "escolha do gráfico adequado"], "prerequisites": ["python-pandas"] },
+      { "id": "python-sql", "name": "SQL com Python", "level": "intermediario", "hours": 5, "topics": ["sqlite3 e SQLAlchemy", "consultas com pandas", "parametrização segura"], "prerequisites": ["python-pandas"] },
+      { "id": "python-machine-learning", "name": "Machine Learning (Scikit-learn)", "level": "intermediario", "hours": 14, "topics": ["treino e teste", "métricas de avaliação", "pipelines e validação cruzada"], "prerequisites": ["python-pandas"] },
+      { "id": "python-fastapi", "name": "FastAPI", "level": "avancado", "hours": 8, "topics": ["rotas e Pydantic", "injeção de dependências", "async"], "prerequisites": ["python-basico"] },
+      { "id": "python-data-pipelines", "name": "Data Pipelines", "level": "avancado", "hours": 10, "topics": ["ETL", "orquestração com Airflow/Prefect", "qualidade de dados"], "prerequisites": ["python-sql"] },
+      { "id": "python-mlops", "name": "MLOps e Deploy de Modelos", "level": "avancado", "hours": 10, "topics": ["versionamento de modelos", "servir modelos via API", "monitoramento de drift"], "prerequisites": ["python-machine-learning", "python-fastapi"] }
+    ]
+  },
+  "typescript": {
+    "title": "Trilha TypeScript Avançado",
+    "description": "Do sistema de tipos básico a tipos avançados e APIs com segurança de ponta a ponta",
+    "aliases": ["ts"],
+    "modules": [
+      { "id": "typescript-tipos-basicos", "name": "Tipos Básicos e Inferência", "level": "iniciante", "hours": 5, "topics": ["tipos primitivos", "inferência", "arrays e tuplas"], "prerequisites": [] },
+      { "id": "typescript-interfaces", "name": "Funções, Objetos e Interfaces", "level": "iniciante", "hours": 6, "topics": ["interface vs type alias", "funções tipadas", "readonly e propriedades opcionais"], "prerequisites": ["typescript-tipos-basicos"] },
+      { "id": "typescript-unions-narrowing", "name": "Unions, Narrowing e Type Guards", "level": "intermediario", "hours": 6, "topics": ["unions e intersections", "type guards", "discriminated unions"], "prerequisites": ["typescript-interfaces"] },
+      { "id": "typescript-generics", "name": "Generics", "level": "intermediario", "hours": 7, "topics": ["funções genéricas", "constraints", "classes genéricas"], "prerequisites": ["typescript-interfaces"] },
+      { "id": "typescript-tooling", "name": "Configuração do tsconfig e Tooling", "level": "intermediario", "hours": 4, "topics": ["tsconfig e modo strict", "ESLint e Prettier", "módulos e build"], "prerequisites": ["typescript-tipos-basicos"] },
+      { "id": "typescript-utility-types", "name": "Utility Types e Mapped Types", "level": "avancado", "hours": 6, "topics": ["Partial, Pick e Omit", "mapped types", "template literal types"], "prerequisites": ["typescript-generics"] },
+      { "id": "typescript-conditional-types", "name": "Conditional Types e infer", "level": "avancado", "hours": 7, "topics": ["conditional types", "infer", "tipos recursivos"], "prerequisites": ["typescript-generics", "typescript-unions-narrowing"] },
+      { "id": "typescript-apis-tipadas", "name": "Tipagem de APIs e Validação em Runtime", "level": "avancado", "hours": 8, "topics": ["validação com Zod", "contratos cliente-servidor", "inferência a partir de schemas"], "prerequisites": ["typescript-utility-types"] }
+    ]
+  },
+  "devops": {
+    "title": "Trilha DevOps e Cloud Native",
+    "description": "Automatize entrega, infraestrutura e operação de software com containers, CI/CD e Kubernetes",
+    "aliases": ["docker", "kubernetes", "k8s", "ci/cd", "cicd"],
+    "modules": [
+      { "id": "devops-linux-shell", "name": "Linux e Shell", "level": "iniciante", "hours": 8, "topics": ["navegação e permissões", "shell scripting", "processos e logs"], "prerequisites": [] },
+      { "id": "devops-git", "name": "Git e Fluxos de Trabalho", "level": "iniciante", "hours": 5, "topics": ["branches e merges", "rebase e conflitos", "trunk-based e GitFlow"], "prerequisites": [] },
+      { "id": "devops-docker", "name": "Containers com Docker", "level": "intermediario", "hours": 8, "topics": ["imagens e camadas", "Dockerfile multi-stage", "volumes e redes"], "prerequisites": ["devops-linux-shell"] },
+      { "id": "devops-cicd", "name": "CI/CD com GitHub Actions", "level": "intermediario", "hours": 7, "topics": ["pipelines e workflows", "testes e build automatizados", "deploy contínuo"], "prerequisites": ["devops-git", "devops-docker"] },
+      { "id": "devops-iac", "name": "Infraestrutura como Código (Terraform)", "level": "intermediario", "hours": 10, "topics": ["Terraform", "state e módulos", "ambientes reproduzíveis"], "prerequisites": ["devops-linux-shell"] },
+      { "id": "devops-kubernetes", "name": "Kubernetes", "level": "avancado", "hours": 16, "topics": ["Pods e Deployments", "Services e Ingress", "ConfigMaps e Secrets"], "prerequisites": ["devops-docker"] },
+      { "id": "devops-observabilidade", "name": "Observabilidade (Prometheus/Grafana)", "level": "avancado", "hours": 8, "topics": ["métricas com Prometheus", "logs e traces", "alertas e SLOs"], "prerequisites": ["devops-kubernetes"] },
+      { "id": "devops-devsecops", "name": "Segurança e DevSecOps", "level": "avancado", "hours": 8, "topics": ["varredura de imagens e dependências", "gestão de segredos", "políticas de segurança"], "prerequisites": ["devops-cicd"] }
+    ]
   }
 }

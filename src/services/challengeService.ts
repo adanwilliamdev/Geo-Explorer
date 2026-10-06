@@ -1,280 +1,196 @@
-export interface Challenge {
+import challengesData from '../data/challenges.json';
+import { GeoError, NotFoundError, ValidationError } from '../errors';
+import { Difficulty, DIFFICULTY_BY_LEVEL, Level, LEVELS } from '../types';
+import { suggestionSuffix, tryParseLevel } from '../validation';
+import trailService, { TrailService } from './trailService';
+
+export interface RawChallenge {
   id: string;
   tech: string;
-  level: string;
+  level: Level;
   title: string;
   description: string;
   requirements: string[];
-  difficulty: 'easy' | 'medium' | 'hard';
   estimatedTime: string;
-  hints?: string[];
+  hints: string[];
+  tags: string[];
+  moduleIds: string[];
 }
 
+export interface Challenge extends RawChallenge {
+  difficulty: Difficulty;
+  /** XP base concedido por uma aprovação com nota 100 e sem dicas. */
+  xp: number;
+}
+
+export interface ChallengeEvaluation {
+  challengeId: string;
+  /** 0-100: percentual dos requisitos atendidos. */
+  score: number;
+  passed: boolean;
+  passScore: number;
+  requirementsMet: number;
+  requirementsTotal: number;
+  unmet: string[];
+  hintsUsed: number;
+  /** XP que esta avaliação vale (antes de regras de repetição do ProgressService). */
+  xp: number;
+}
+
+export interface PickOptions {
+  /** IDs já concluídos, evitados enquanto houver alternativa. */
+  excludeIds?: string[];
+}
+
+export interface PickResult {
+  challenge: Challenge;
+  /** true quando todas as opções já tinham sido concluídas e uma foi repetida. */
+  repeated: boolean;
+}
+
+export interface ChallengeServiceOptions {
+  challenges?: RawChallenge[];
+  trails?: TrailService;
+  rng?: () => number;
+  passScore?: number;
+}
+
+export const XP_BY_DIFFICULTY: Record<Difficulty, number> = { easy: 50, medium: 100, hard: 200 };
+
 export class ChallengeService {
-  private challengeTemplates: Record<string, Record<string, Challenge[]>> = {};
+  private readonly challenges: Challenge[];
+  private readonly trails: TrailService;
+  private readonly rng: () => number;
+  private readonly passScore: number;
 
-  constructor() {
-    this.initializeChallenges();
+  constructor(options: ChallengeServiceOptions = {}) {
+    this.trails = options.trails ?? trailService;
+    this.rng = options.rng ?? Math.random;
+    this.passScore = options.passScore ?? 70;
+    const raw = options.challenges ?? (challengesData as unknown as RawChallenge[]);
+    this.validate(raw);
+    this.challenges = raw.map((c) => {
+      const difficulty = DIFFICULTY_BY_LEVEL[c.level];
+      return { ...c, difficulty, xp: XP_BY_DIFFICULTY[difficulty] };
+    });
   }
 
-  /**
-   * Inicializa os templates de desafios para cada tecnologia e nível
-   */
-  private initializeChallenges(): void {
-    // Desafios Java
-    this.challengeTemplates['java'] = {
-      'iniciante': [
-        {
-          id: 'java-basics-1',
-          tech: 'java',
-          level: 'iniciante',
-          title: 'Calculadora Simples',
-          description: 'Crie uma calculadora que realiza operações básicas (soma, subtração, multiplicação, divisão) utilizando métodos e tratamento de exceções.',
-          requirements: [
-            'Criar uma classe Calculator com métodos para cada operação',
-            'Implementar tratamento para divisão por zero',
-            'Utilizar Scanner para entrada de dados',
-            'Exibir resultados formatados'
-          ],
-          difficulty: 'easy',
-          estimatedTime: '45 minutos',
-          hints: ['Use try-catch para exceções', 'Crie um menu com switch']
-        }
-      ],
-      'intermediario': [
-        {
-          id: 'java-oop-1',
-          tech: 'java',
-          level: 'intermediario',
-          title: 'Sistema de Gerenciamento de Biblioteca',
-          description: 'Desenvolva um sistema de biblioteca com classes para Livro, Usuário e Empréstimo utilizando conceitos de POO.',
-          requirements: [
-            'Criar classes com encapsulamento adequado',
-            'Implementar herança para diferentes tipos de usuários',
-            'Utilizar collections para gerenciar dados',
-            'Implementar validações de negócio'
-          ],
-          difficulty: 'medium',
-          estimatedTime: '1h30min',
-          hints: ['Pense na relação entre as entidades', 'Use List para armazenamento']
-        }
-      ],
-      'avancado': [
-        {
-          id: 'java-spring-1',
-          tech: 'java',
-          level: 'avancado',
-          title: 'API REST com Spring Boot',
-          description: 'Crie uma API REST completa com Spring Boot para gerenciamento de produtos, incluindo autenticação e banco de dados.',
-          requirements: [
-            'Configurar Spring Boot com Spring Security',
-            'Implementar CRUD completo para produtos',
-            'Utilizar JPA/Hibernate com banco de dados',
-            'Documentar a API com Swagger'
-          ],
-          difficulty: 'hard',
-          estimatedTime: '3 horas',
-          hints: ['Use Spring Initializr para começar', 'Siga padrões RESTful']
-        }
-      ]
-    };
-
-    // Desafios Node.js
-    this.challengeTemplates['node'] = {
-      'iniciante': [
-        {
-          id: 'node-basics-1',
-          tech: 'node',
-          level: 'iniciante',
-          title: 'Servidor HTTP Simples',
-          description: 'Crie um servidor HTTP que serve arquivos estáticos e processa requisições GET e POST.',
-          requirements: [
-            'Usar módulo http nativo ou Express',
-            'Servir arquivos HTML/CSS/JS',
-            'Processar dados de formulário',
-            'Retornar respostas JSON'
-          ],
-          difficulty: 'easy',
-          estimatedTime: '1 hora',
-          hints: ['Use fs para ler arquivos', 'Configure rotas básicas']
-        }
-      ],
-      'intermediario': [
-        {
-          id: 'node-express-1',
-          tech: 'node',
-          level: 'intermediario',
-          title: 'API RESTful com Autenticação JWT',
-          description: 'Construa uma API RESTful com Express, autenticação JWT e integração com banco de dados PostgreSQL.',
-          requirements: [
-            'Configurar Express com estrutura MVC',
-            'Implementar autenticação JWT',
-            'Integrar com Prisma/TypeORM',
-            'Criar middlewares para validação'
-          ],
-          difficulty: 'medium',
-          estimatedTime: '2h30min',
-          hints: ['Use bcrypt para hash de senha', 'Implemente refresh token']
-        }
-      ]
-    };
-
-    // Desafios React
-    this.challengeTemplates['react'] = {
-      'iniciante': [
-        {
-          id: 'react-basics-1',
-          tech: 'react',
-          level: 'iniciante',
-          title: 'Lista de Tarefas',
-          description: 'Crie uma aplicação de lista de tarefas com React utilizando hooks e gerenciamento de estado.',
-          requirements: [
-            'Usar useState para gerenciar tarefas',
-            'Permitir adicionar, remover e marcar como concluído',
-            'Salvar dados no localStorage',
-            'Ter um design responsivo'
-          ],
-          difficulty: 'easy',
-          estimatedTime: '1h30min',
-          hints: ['Use a lib "uuid" para identificar itens', 'Crie componentes reutilizáveis']
-        }
-      ],
-      'intermediario': [
-        {
-          id: 'react-context-1',
-          tech: 'react',
-          level: 'intermediario',
-          title: 'E-commerce Carousel',
-          description: 'Desenvolva um carousel de produtos com filtros e carrinho de compras usando Context API e React Router.',
-          requirements: [
-            'Usar Context API para estado global',
-            'Implementar rotas para categorias',
-            'Criar carrinho de compras',
-            'Utilizar Tailwind CSS para estilização'
-          ],
-          difficulty: 'medium',
-          estimatedTime: '3 horas',
-          hints: ['Pense na estrutura do contexto', 'Use useReducer para estado complexo']
-        }
-      ],
-      'avancado': [
-        {
-          id: 'react-next-1',
-          tech: 'react',
-          level: 'avancado',
-          title: 'Blog com Next.js e GraphQL',
-          description: 'Crie um blog completo com Next.js, GraphQL (Apollo) e SSG/SSR.',
-          requirements: [
-            'Configurar Next.js com TypeScript',
-            'Implementar Apollo Client para GraphQL',
-            'Usar SSG e SSR conforme necessário',
-            'Otimizar performance e SEO'
-          ],
-          difficulty: 'hard',
-          estimatedTime: '4 horas',
-          hints: ['Use getStaticProps para posts', 'Implemente paginação']
-        }
-      ]
-    };
-
-    // Desafios Python
-    this.challengeTemplates['python'] = {
-      'iniciante': [
-        {
-          id: 'python-basics-1',
-          tech: 'python',
-          level: 'iniciante',
-          title: 'Análise de Dados com Pandas',
-          description: 'Realize análise exploratória de dados utilizando Pandas e crie visualizações com Matplotlib.',
-          requirements: [
-            'Carregar dados de um CSV',
-            'Realizar limpeza e pré-processamento',
-            'Criar visualizações relevantes',
-            'Gerar estatísticas descritivas'
-          ],
-          difficulty: 'easy',
-          estimatedTime: '1h30min',
-          hints: ['Use describe() para estatísticas', 'Crie gráficos de distribuição']
-        }
-      ],
-      'intermediario': [
-        {
-          id: 'python-ml-1',
-          tech: 'python',
-          level: 'intermediario',
-          title: 'Predição com Machine Learning',
-          description: 'Construa um modelo de machine learning para prever preços utilizando Scikit-learn.',
-          requirements: [
-            'Realizar análise exploratória',
-            'Preparar dados (encoding, scaling)',
-            'Treinar e avaliar múltiplos modelos',
-            'Otimizar hiperparâmetros'
-          ],
-          difficulty: 'medium',
-          estimatedTime: '3 horas',
-          hints: ['Use GridSearchCV para otimização', 'Avalie com métricas apropriadas']
-        }
-      ]
-    };
+  private validate(raw: RawChallenge[]): void {
+    const seen = new Set<string>();
+    for (const c of raw) {
+      const fail = (m: string): never => {
+        throw new GeoError('INTERNAL', `Desafio inválido "${c.id}": ${m}`);
+      };
+      if (seen.has(c.id)) fail('id duplicado');
+      seen.add(c.id);
+      if (!this.trails.tryResolveTech(c.tech)) fail(`tecnologia desconhecida "${c.tech}"`);
+      if (!LEVELS.includes(c.level)) fail('nível inválido');
+      if (c.requirements.length === 0) fail('sem requisitos');
+      for (const id of c.moduleIds) {
+        const mod = this.trails.getModule(id);
+        if (mod.tech !== c.tech) fail(`módulo "${id}" pertence a outra trilha`);
+      }
+    }
   }
 
-  /**
-   * Gera um desafio baseado na tecnologia e nível
-   */
-  generateChallenge(tech: string, level: string): Challenge {
-    const normalizedTech = tech.toLowerCase().trim();
-    const normalizedLevel = level.toLowerCase().trim();
+  /** Sorteia um desafio da tecnologia/nível, evitando os já concluídos quando possível. */
+  pickChallenge(tech: string, level: string, options: PickOptions = {}): PickResult {
+    const key = this.trails.tryResolveTech(tech);
+    if (!key) throw new NotFoundError(`Tecnologia não suportada: ${tech}`);
 
-    if (!this.challengeTemplates[normalizedTech]) {
-      throw new Error(`Tecnologia não suportada: ${tech}`);
-    }
-
-    if (!this.challengeTemplates[normalizedTech][normalizedLevel]) {
-      throw new Error(`Nível não encontrado para ${tech}: ${level}`);
-    }
-
-    const challenges = this.challengeTemplates[normalizedTech][normalizedLevel];
-    const randomIndex = Math.floor(Math.random() * challenges.length);
-    
-    return {
-      ...challenges[randomIndex],
-      id: `${challenges[randomIndex].id}-${Date.now()}`
-    };
-  }
-
-  /**
-   * Gera múltiplos desafios
-   */
-  generateMultipleChallenges(tech: string, level: string, count: number = 3): Challenge[] {
-    const challenges: Challenge[] = [];
-    const available = this.challengeTemplates[tech]?.[level] || [];
-    
-    if (available.length === 0) {
-      throw new Error(`Nenhum desafio disponível para ${tech} no nível ${level}`);
-    }
-
-    const shuffled = [...available].sort(() => Math.random() - 0.5);
-    const limit = Math.min(count, shuffled.length);
-    
-    for (let i = 0; i < limit; i++) {
-      challenges.push({
-        ...shuffled[i],
-        id: `${shuffled[i].id}-${Date.now()}-${i}`
+    const parsed = tryParseLevel(level);
+    const pool = parsed ? this.challenges.filter((c) => c.tech === key && c.level === parsed) : [];
+    if (pool.length === 0) {
+      throw new NotFoundError(`Nível não encontrado para ${tech}: ${level}`, {
+        availableLevels: this.getAvailableLevels(key),
       });
     }
 
-    return challenges;
+    const exclude = new Set(options.excludeIds ?? []);
+    const fresh = pool.filter((c) => !exclude.has(c.id));
+    const candidates = fresh.length > 0 ? fresh : pool;
+    const challenge = candidates[Math.floor(this.rng() * candidates.length)];
+    return { challenge: { ...challenge }, repeated: fresh.length === 0 };
+  }
+
+  generateChallenge(tech: string, level: string, options: PickOptions = {}): Challenge {
+    return this.pickChallenge(tech, level, options).challenge;
+  }
+
+  /** Até `count` desafios distintos, em ordem aleatória. */
+  generateMultipleChallenges(tech: string, level: string, count: number = 3): Challenge[] {
+    const key = this.trails.tryResolveTech(tech);
+    const parsed = tryParseLevel(level);
+    const pool = this.challenges.filter((c) => c.tech === key && c.level === parsed);
+    if (pool.length === 0) {
+      throw new NotFoundError(`Nenhum desafio disponível para ${tech} no nível ${level}`);
+    }
+    const shuffled = [...pool];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(this.rng() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled.slice(0, Math.max(0, count)).map((c) => ({ ...c }));
+  }
+
+  getChallenge(id: string): Challenge {
+    const found = this.challenges.find((c) => c.id === id.trim());
+    if (!found) {
+      throw new NotFoundError(
+        `Desafio não encontrado: ${id}.` + suggestionSuffix(id, this.challenges.map((c) => c.id))
+      );
+    }
+    return { ...found };
+  }
+
+  listChallenges(filter: { tech?: string; level?: string } = {}): Challenge[] {
+    const tech = filter.tech ? this.trails.resolveTech(filter.tech) : undefined;
+    const level = filter.level ? tryParseLevel(filter.level) : undefined;
+    return this.challenges
+      .filter((c) => (!tech || c.tech === tech) && (!level || c.level === level))
+      .map((c) => ({ ...c }));
+  }
+
+  /** Níveis que possuem ao menos um desafio (lista vazia para tecnologia desconhecida). */
+  getAvailableLevels(tech: string): Level[] {
+    const key = this.trails.tryResolveTech(tech);
+    if (!key) return [];
+    const present = new Set(this.challenges.filter((c) => c.tech === key).map((c) => c.level));
+    return LEVELS.filter((l) => present.has(l));
   }
 
   /**
-   * Lista todos os níveis disponíveis para uma tecnologia
+   * Avalia uma entrega a partir de quais requisitos foram atendidos.
+   * Quem avalia o código (o assistente de IA ou um revisor) informa `met` na mesma ordem de `requirements`.
    */
-  getAvailableLevels(tech: string): string[] {
-    const normalizedTech = tech.toLowerCase().trim();
-    if (!this.challengeTemplates[normalizedTech]) {
-      return [];
+  evaluate(challengeId: string, met: boolean[], hintsUsed: number = 0): ChallengeEvaluation {
+    const challenge = this.getChallenge(challengeId);
+    if (met.length !== challenge.requirements.length) {
+      throw new ValidationError(
+        `"requirementsMet" deve ter ${challenge.requirements.length} itens (um por requisito), mas recebeu ${met.length}`,
+        { requirements: challenge.requirements }
+      );
     }
-    return Object.keys(this.challengeTemplates[normalizedTech]);
+    if (!Number.isInteger(hintsUsed) || hintsUsed < 0) {
+      throw new ValidationError('"hintsUsed" deve ser um inteiro maior ou igual a zero');
+    }
+
+    const requirementsMet = met.filter(Boolean).length;
+    const score = Math.round((requirementsMet / met.length) * 100);
+    const passed = score >= this.passScore;
+    const hintFactor = Math.max(0.5, 1 - 0.1 * hintsUsed);
+
+    return {
+      challengeId: challenge.id,
+      score,
+      passed,
+      passScore: this.passScore,
+      requirementsMet,
+      requirementsTotal: met.length,
+      unmet: challenge.requirements.filter((_, i) => !met[i]),
+      hintsUsed,
+      xp: passed ? Math.round(challenge.xp * (score / 100) * hintFactor) : 0,
+    };
   }
 }
 

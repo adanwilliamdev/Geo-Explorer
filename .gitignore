@@ -4,3 +4,7 @@ coverage/
 *.log
 .env
 .DS_Store
+# dados locais gerados pelo servidor (progresso, certificados, segredo)
+data/
+.geo-explorer/
+secret.key
