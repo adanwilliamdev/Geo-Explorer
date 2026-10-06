@@ -9,6 +9,7 @@
 - IDs de certificado deixaram de usar `Math.random()` (agora `crypto`, base32 sem caracteres ambíguos) e os certificados são assinados com HMAC-SHA256.
 - `issue_certificate` não aceita mais trilha/nível inexistentes nem nomes com caracteres de controle.
 - `generateMultipleChallenges` não normalizava a tecnologia; IDs de desafio deixaram de conter timestamp (agora são estáveis).
+- O SDK MCP 0.5.x é somente ESM e o projeto compila para CommonJS: o servidor falhava com `ERR_REQUIRE_ESM` no Node 18/20. O SDK agora é carregado por `import()` nativo (caminho absoluto resolvido com `require.resolve`), e o `smoke` do CI cobre esse caso.
 - `server.ts` não inicia mais ao ser importado; `lint`/`format` com glob que não expandia subpastas.
 
 ### Novidades
