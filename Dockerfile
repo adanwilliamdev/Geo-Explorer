@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # ---- Build stage ----
-FROM node:20-alpine AS builder
+FROM node:26-alpine AS builder
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ COPY src ./src
 RUN npm run build
 
 # ---- Production stage ----
-FROM node:20-alpine AS runner
+FROM node:26-alpine AS runner
 
 LABEL org.opencontainers.image.title="geo-explorer" \
       org.opencontainers.image.description="Servidor MCP de trilhas de aprendizagem, desafios e certificados"
