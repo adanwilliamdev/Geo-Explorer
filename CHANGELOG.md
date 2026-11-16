@@ -1,5 +1,13 @@
 # Changelog
 
+## Não lançado
+
+### Correções
+- **Streak em UTC**: o dia da atividade e da sequência agora usa o fuso `GEO_TIMEZONE` (antes, atividade após as 21h em Brasília contava como o dia seguinte e quebrava a sequência).
+- **Revogação adulterável**: o estado de revogação passou a ser assinado (`revocationSignature`). Voltar `valid: true` ou editar motivo/data de uma revogação agora resulta em `revoked`/`tampered`. Registros revogados no formato antigo continuam revogados.
+- **Corrida no `secret.key`**: criação com `wx`; se outro processo criou o arquivo primeiro, o segredo dele é reutilizado em vez de sobrescrito.
+- **Perda de dados com vários processos**: `JsonFileStore.update` agora é protegido por lock em arquivo (com remoção de lock abandonado e tempo limite).
+
 ## 2.0.0
 
 ### Correções

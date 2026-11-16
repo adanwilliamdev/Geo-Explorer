@@ -78,6 +78,12 @@ export function rankFor(xp: number): Rank {
 // Sequência de dias (streak)
 // ---------------------------------------------------------------------------
 
+/** Dia civil (YYYY-MM-DD) de um instante no fuso IANA informado (padrão: UTC). */
+export function dayKey(date: Date, timeZone = 'UTC'): string {
+  // O locale en-CA formata como YYYY-MM-DD.
+  return new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
+}
+
 const dayNumber = (isoDay: string): number => Math.floor(Date.parse(`${isoDay}T00:00:00Z`) / 86_400_000);
 
 export interface Streak {

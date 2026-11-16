@@ -33,20 +33,41 @@ export class MemoryStore<T> implements Store<T> {
   }
 }
 
+export interface JsonFileStoreOptions {
+  /** Tempo máximo esperando o lock de escrita (ms). Padrão: 5000. */
+  lockTimeoutMs?: number;
+  /** Idade (ms) a partir da qual um lock é considerado abandonado e removido. Padrão: 10000. */
+  lockStaleMs?: number;
+}
+
+const sleep = (ms: number): void => {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+};
+
 /**
  * Persistência em arquivo JSON com gravação atômica (arquivo temporário + rename).
- * Relê o arquivo quando ele muda em disco, o que cobre vários processos em modo "melhor esforço"
- * (último a gravar vence; não há lock entre processos).
+ * Cada `update` é uma seção crítica protegida por um lock em arquivo (`<arquivo>.lock`, criado com `wx`):
+ * ler → mutar → gravar acontece sem que outro processo no mesmo diretório intercale uma escrita,
+ * então nenhuma atualização é perdida. Um lock mais velho que `lockStaleMs` (processo que morreu) é removido.
+ * A leitura não usa lock: o rename atômico garante que ela nunca veja um arquivo pela metade.
  */
 export class JsonFileStore<T> implements Store<T> {
   private cache: T;
   private signature = '';
 
+  private readonly lockFile: string;
+  private readonly lockTimeoutMs: number;
+  private readonly lockStaleMs: number;
+
   constructor(
     private readonly file: string,
     initial: () => T,
-    private readonly logger: Logger = silentLogger
+    private readonly logger: Logger = silentLogger,
+    options: JsonFileStoreOptions = {}
   ) {
+    this.lockFile = `${file}.lock`;
+    this.lockTimeoutMs = options.lockTimeoutMs ?? 5000;
+    this.lockStaleMs = options.lockStaleMs ?? 10_000;
     this.cache = initial();
     this.refresh();
   }
@@ -57,12 +78,55 @@ export class JsonFileStore<T> implements Store<T> {
   }
 
   update<R>(mutator: (draft: T) => R): R {
-    this.refresh();
-    const draft = clone(this.cache);
-    const result = mutator(draft);
-    this.persist(draft);
-    this.cache = draft;
-    return result;
+    this.acquireLock();
+    try {
+      this.refresh();
+      const draft = clone(this.cache);
+      const result = mutator(draft);
+      this.persist(draft);
+      this.cache = draft;
+      return result;
+    } finally {
+      this.releaseLock();
+    }
+  }
+
+  private acquireLock(): void {
+    const deadline = Date.now() + this.lockTimeoutMs;
+    fs.mkdirSync(path.dirname(this.file), { recursive: true });
+    for (;;) {
+      try {
+        fs.closeSync(fs.openSync(this.lockFile, 'wx', 0o600));
+        return;
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== 'EEXIST') {
+          throw new StorageError(`Falha ao obter o lock de ${this.file}`, {
+            cause: error instanceof Error ? error.message : String(error),
+          });
+        }
+      }
+      try {
+        if (Date.now() - fs.statSync(this.lockFile).mtimeMs > this.lockStaleMs) {
+          this.logger.warn('removendo lock abandonado', { lock: this.lockFile });
+          fs.rmSync(this.lockFile, { force: true });
+          continue;
+        }
+      } catch {
+        continue; // o lock sumiu entre o open e o stat: tenta de novo
+      }
+      if (Date.now() >= deadline) {
+        throw new StorageError(`Tempo esgotado aguardando o lock de ${this.file}. Outro processo está gravando?`);
+      }
+      sleep(10);
+    }
+  }
+
+  private releaseLock(): void {
+    try {
+      fs.rmSync(this.lockFile, { force: true });
+    } catch {
+      /* melhor esforço: um lock órfão expira sozinho */
+    }
   }
 
   private statSignature(): string | null {

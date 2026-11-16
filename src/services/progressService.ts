@@ -6,6 +6,7 @@ import { ACHIEVEMENTS, findNewAchievements } from './achievements';
 import challengeServiceDefault, { Challenge, ChallengeEvaluation, ChallengeService } from './challengeService';
 import {
   computeStreak,
+  dayKey,
   emptyProgressState,
   ProgressState,
   Rank,
@@ -20,6 +21,8 @@ export interface ProgressServiceDeps {
   trails?: TrailService;
   challenges?: ChallengeService;
   clock?: Clock;
+  /** Fuso IANA que define o "dia" da atividade e do streak (padrão: America/Sao_Paulo). */
+  timezone?: string;
 }
 
 export interface AchievementView {
@@ -119,12 +122,19 @@ export class ProgressService {
   private readonly trails: TrailService;
   private readonly challenges: ChallengeService;
   private readonly clock: Clock;
+  private readonly timezone: string;
 
   constructor(deps: ProgressServiceDeps = {}) {
     this.store = deps.store ?? new MemoryStore<ProgressState>(emptyProgressState());
     this.trails = deps.trails ?? trailServiceDefault;
     this.challenges = deps.challenges ?? challengeServiceDefault;
     this.clock = deps.clock ?? systemClock;
+    this.timezone = deps.timezone ?? 'America/Sao_Paulo';
+  }
+
+  /** Dia civil no fuso configurado (não em UTC: após as 21h em Brasília o dia UTC já é o seguinte). */
+  private dayOf(date: Date): string {
+    return dayKey(date, this.timezone);
   }
 
   // -------------------------------------------------------------------------
@@ -173,7 +183,7 @@ export class ProgressService {
 
   private touch(user: UserRecord, now: string): void {
     user.updatedAt = now;
-    const day = now.slice(0, 10);
+    const day = this.dayOf(new Date(now));
     if (!user.activityDays.includes(day)) {
       user.activityDays.push(day);
       user.activityDays.sort();
@@ -505,7 +515,7 @@ export class ProgressService {
   }
 
   private summarize(user: UserRecord): UserSummary {
-    const today = this.clock().toISOString().slice(0, 10);
+    const today = this.dayOf(this.clock());
     const unlocked = Object.entries(user.achievements);
     return {
       id: user.id,

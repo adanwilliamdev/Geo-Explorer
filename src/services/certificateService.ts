@@ -28,6 +28,8 @@ export interface Certificate {
   signature: string;
   revokedAt?: string;
   revokedReason?: string;
+  /** HMAC da revogação (id, assinatura de emissão, data e motivo); impede "desrevogar" ou editar a revogação. */
+  revocationSignature?: string;
 }
 
 export interface CertificateState {
@@ -158,12 +160,21 @@ export class CertificateService {
         certificate: { ...certificate, valid: false },
       };
     }
-    if (!certificate.valid) {
+    const revocation = this.revocationState(certificate);
+    if (revocation === 'tampered') {
+      return {
+        valid: false,
+        status: 'tampered',
+        message: 'A assinatura da revogação não confere: o registro foi alterado após a revogação',
+        certificate: { ...certificate, valid: false },
+      };
+    }
+    if (revocation === 'revoked') {
       return {
         valid: false,
         status: 'revoked',
         message: `Certificado revogado${certificate.revokedReason ? `: ${certificate.revokedReason}` : ''}`,
-        certificate: { ...certificate },
+        certificate: { ...certificate, valid: false },
       };
     }
     return {
@@ -189,12 +200,13 @@ export class CertificateService {
     return this.store.update((state) => {
       const certificate = state.certificates[id];
       if (!certificate) throw new NotFoundError('Certificado não encontrado');
-      if (!certificate.valid) {
+      if (this.revocationState(certificate) !== 'active') {
         return { success: true, message: `Certificado ${id} já estava revogado` };
       }
       certificate.valid = false;
       certificate.revokedAt = this.clock().toISOString();
       if (reason) certificate.revokedReason = reason;
+      certificate.revocationSignature = this.signRevocation(certificate);
       return { success: true, message: `Certificado ${id} revogado com sucesso` };
     });
   }
@@ -269,6 +281,25 @@ export class CertificateService {
     const expected = Buffer.from(this.sign(c), 'hex');
     const actual = Buffer.from(String(c.signature), 'hex');
     return expected.length === actual.length && timingSafeEqual(expected, actual);
+  }
+
+  private signRevocation(c: Certificate): string {
+    const payload = ['revoked', c.id, c.signature, c.revokedAt ?? '', c.revokedReason ?? ''].join('|');
+    return createHmac('sha256', this.secret).update(payload).digest('hex');
+  }
+
+  /**
+   * Situação de revogação lida do registro. Qualquer marca de revogação (`valid: false`, `revokedAt` ou
+   * `revocationSignature`) exige assinatura coerente; assim, voltar `valid` para true não "desrevoga".
+   * Registros antigos (revogados antes da assinatura existir) sem nenhum outro vestígio seguem como revogados.
+   */
+  private revocationState(c: Certificate): 'active' | 'revoked' | 'tampered' {
+    const marked = !c.valid || c.revokedAt !== undefined || c.revocationSignature !== undefined;
+    if (!marked) return 'active';
+    if (c.revocationSignature === undefined) return c.valid ? 'tampered' : 'revoked';
+    const expected = Buffer.from(this.signRevocation(c), 'hex');
+    const actual = Buffer.from(String(c.revocationSignature), 'hex');
+    return expected.length === actual.length && timingSafeEqual(expected, actual) ? 'revoked' : 'tampered';
   }
 
   private buildResult(certificate: Certificate, techTitle: string, alreadyIssued: boolean): IssueCertificateResult {

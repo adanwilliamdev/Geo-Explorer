@@ -178,7 +178,7 @@ Variáveis de ambiente (veja `.env.example`):
 | `GEO_STRICT_CERTIFICATES` | `false` | Só emite certificados com conclusão comprovada |
 | `GEO_PASS_SCORE` | `70` | Nota mínima (1–100) para aprovar um desafio |
 | `GEO_LOG_LEVEL` | `info` | `debug` · `info` · `warn` · `error` · `silent` |
-| `GEO_TIMEZONE` | `America/Sao_Paulo` | Fuso das datas nos certificados |
+| `GEO_TIMEZONE` | `America/Sao_Paulo` | Fuso das datas nos certificados e do "dia" usado na sequência (streak) |
 
 ⚠️ **Faça backup de `secret.key`**: sem o mesmo segredo, certificados já emitidos passam a ser reportados como `tampered`.
 
@@ -227,7 +227,8 @@ A suíte cobre: validação do catálogo, learning path, desafios e avaliação,
 
 * **Sem autenticação**: quem controla o servidor controla os dados. Não exponha-o a usuários não confiáveis; o nome do usuário não é uma credencial.
 * **A avaliação dos desafios é declarada pelo cliente** (`requirementsMet`); o servidor calcula nota e XP, mas não executa nem lê o código.
-* **Persistência em JSON**: adequada para uso pessoal/local. Vários processos no mesmo diretório funcionam em "melhor esforço" (sem lock: o último a gravar vence).
+* **Persistência em JSON**: adequada para uso pessoal/local. Vários processos no mesmo diretório são seguros (cada gravação usa um lock em arquivo e nenhuma atualização se perde), mas o desempenho cai com muitos dados: o arquivo inteiro é regravado a cada operação. Para volume maior, o próximo passo é SQLite atrás da interface `Store`.
+* **Revogação**: é protegida por assinatura (não dá para "desrevogar" ou editar motivo/data sem ser detectado), mas quem tem acesso de escrita ao disco ainda pode apagar o registro inteiro. Uma lista de revogação externa/append-only exigiria um serviço fora do arquivo local.
 * Um certificado só é verificável por quem tem acesso ao servidor/segredo; não há página pública de verificação.
 
 ## 🔮 Roadmap
@@ -260,4 +261,3 @@ Este projeto está licenciado sob a licença **MIT**.
 **Explorando conhecimento através de IA, ferramentas e desenvolvimento de software.**
 
 </div>
-<!-- pull-shark: 20260922-094330 -->

@@ -57,6 +57,40 @@ describe('stores', () => {
     expect(fs.readFileSync(file, 'utf8')).toBe('{ quebrado');
   });
 
+  test('JsonFileStore: lock ocupado por outro processo gera erro após o tempo limite', () => {
+    const file = path.join(dir, 'data.json');
+    const s = new JsonFileStore<Doc>(file, () => ({ items: [] }), silentLogger, { lockTimeoutMs: 50 });
+    fs.writeFileSync(`${file}.lock`, '');
+    expect(() => s.update((d) => d.items.push('x'))).toThrow('Tempo esgotado');
+    expect(fs.existsSync(file)).toBe(false);
+  });
+
+  test('JsonFileStore: lock abandonado (antigo) é removido e a escrita prossegue', () => {
+    const file = path.join(dir, 'data.json');
+    const s = new JsonFileStore<Doc>(file, () => ({ items: [] }), silentLogger, { lockStaleMs: 1000 });
+    fs.writeFileSync(`${file}.lock`, '');
+    const old = new Date(Date.now() - 60_000);
+    fs.utimesSync(`${file}.lock`, old, old);
+    s.update((d) => d.items.push('x'));
+    expect(s.read().items).toEqual(['x']);
+    expect(fs.existsSync(`${file}.lock`)).toBe(false);
+  });
+
+  test('JsonFileStore libera o lock mesmo quando o mutator falha', () => {
+    const file = path.join(dir, 'data.json');
+    const s = new JsonFileStore<Doc>(file, () => ({ items: [] }));
+    expect(() => s.update(() => { throw new Error('x'); })).toThrow('x');
+    expect(fs.existsSync(`${file}.lock`)).toBe(false);
+  });
+
+  test('segredo: se outro processo já criou o secret.key, ele é reutilizado (nunca sobrescrito)', () => {
+    const secretFile = path.join(dir, 'secret.key');
+    fs.writeFileSync(secretFile, 'segredo-ja-existente-0123456789\n');
+    const config = loadConfig({ GEO_DATA_DIR: dir, GEO_LOG_LEVEL: 'silent' });
+    createServices(config, silentLogger);
+    expect(fs.readFileSync(secretFile, 'utf8').trim()).toBe('segredo-ja-existente-0123456789');
+  });
+
   test('createServices persiste progresso e certificados entre execuções, com o mesmo segredo', () => {
     const config = loadConfig({ GEO_DATA_DIR: dir, GEO_LOG_LEVEL: 'silent' });
     const first = createServices(config, silentLogger);

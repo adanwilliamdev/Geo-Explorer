@@ -87,6 +87,45 @@ describe('CertificateService', () => {
     expect(result.valid).toBe(false);
   });
 
+  test('não é possível "desrevogar" um certificado editando o registro', () => {
+    const store = new MemoryStore<CertificateState>(emptyCertificateState());
+    const svc = new CertificateService({ store, secret: SECRET });
+    const id = svc.issueCertificate('Ana Costa', 'node').certificate.id;
+    svc.revokeCertificate(id, 'fraude');
+    expect(svc.verify(id).status).toBe('revoked');
+
+    store.update((state) => {
+      state.certificates[id].valid = true;
+    });
+    expect(svc.verify(id).status).toBe('revoked'); // revokedAt/assinatura continuam no registro
+
+    store.update((state) => {
+      delete state.certificates[id].revocationSignature;
+    });
+    expect(svc.verify(id).status).toBe('tampered'); // valid=true + revokedAt sem assinatura
+  });
+
+  test('editar o motivo ou a data da revogação é detectado', () => {
+    const store = new MemoryStore<CertificateState>(emptyCertificateState());
+    const svc = new CertificateService({ store, secret: SECRET });
+    const id = svc.issueCertificate('Ana Costa', 'node').certificate.id;
+    svc.revokeCertificate(id, 'fraude');
+    store.update((state) => {
+      state.certificates[id].revokedReason = 'engano';
+    });
+    expect(svc.verify(id).status).toBe('tampered');
+  });
+
+  test('registro revogado antes da assinatura de revogação existir continua revogado', () => {
+    const store = new MemoryStore<CertificateState>(emptyCertificateState());
+    const svc = new CertificateService({ store, secret: SECRET });
+    const id = svc.issueCertificate('Ana Costa', 'node').certificate.id;
+    store.update((state) => {
+      state.certificates[id].valid = false; // formato antigo: sem revokedAt nem revocationSignature
+    });
+    expect(svc.verify(id).status).toBe('revoked');
+  });
+
   test('assinatura não confere com outro segredo', () => {
     const store = new MemoryStore<CertificateState>(emptyCertificateState());
     const id = new CertificateService({ store, secret: SECRET }).issueCertificate('Ana Costa', 'node').certificate.id;

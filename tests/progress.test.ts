@@ -1,4 +1,4 @@
-import { computeStreak, rankFor } from '../src/services/progressTypes';
+import { computeStreak, dayKey, rankFor } from '../src/services/progressTypes';
 import { completeUpTo, makeServices, passChallenges } from './helpers';
 
 describe('ProgressService', () => {
@@ -167,6 +167,25 @@ describe('ProgressService', () => {
     const r = s.progress.completeModule('João Silva', 'devops-git');
     expect(r.user.streak.current).toBe(3);
     expect(r.newAchievements.map((a) => a.id)).toContain('on-fire');
+  });
+
+  test('streak usa o dia no fuso configurado, não em UTC (atividade às 22h em Brasília)', () => {
+    const s = makeServices();
+    // 22h BRT de 10/01 = 01h UTC de 11/01; 22h BRT de 11/01 = 01h UTC de 12/01.
+    s.clockState.now = new Date('2026-01-11T01:00:00Z');
+    s.progress.completeModule('João Silva', 'java-sintaxe-basica');
+    s.clockState.now = new Date('2026-01-12T01:00:00Z');
+    s.progress.completeModule('João Silva', 'java-estruturas-controle');
+    // 09h BRT de 12/01: em UTC seria o mesmo dia da atividade anterior, no fuso certo é o terceiro dia.
+    s.clockState.now = new Date('2026-01-12T12:00:00Z');
+    const r = s.progress.completeModule('João Silva', 'devops-git');
+    expect(r.user.streak.current).toBe(3);
+  });
+
+  test('dayKey respeita o fuso informado', () => {
+    const instant = new Date('2026-01-11T01:30:00Z');
+    expect(dayKey(instant, 'America/Sao_Paulo')).toBe('2026-01-10');
+    expect(dayKey(instant, 'UTC')).toBe('2026-01-11');
   });
 
   test('deleteUser apaga o perfil', () => {
